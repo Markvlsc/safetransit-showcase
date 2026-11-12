@@ -1,0 +1,21 @@
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# Source material and archives; the site only needs assets/
+CPS/
+Docu/
+Capstone/
+Eval tool/
+CPS-*.zip
+
+# Local media tooling
+_toolsvenv/
+_tools2/
+_tools3/
+_tools4/
+_tools5/
+_tools6/
+_tools7/
+_tools8/

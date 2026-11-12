@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeTransit — Driver drowsiness &amp; passenger capacity monitoring</title>
+  <meta name="description" content="SafeTransit is an AI + IoT capstone for public utility buses: driver drowsiness and behaviour detection, IR passenger counting, GPS tracking, alerts, analytics, and a mobile app.">
+  <meta name="theme-color" content="#f5f1e6">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SafeTransit — Every trip, on the record">
+  <meta property="og:description" content="Cameras watch the driver. IR beams count the door. One local dashboard keeps the trip on the record.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("safetransit-theme");
+        if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html" aria-label="SafeTransit home">
+        <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M16 3.5 27 8v8.2c0 6.3-4.6 10.7-11 12-6.4-1.3-11-5.7-11-12V8Z" stroke="currentColor" stroke-width="1.4"/>
+          <path d="m10.8 16.2 3.2 3.2 7.2-7.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">Safe<span>Transit</span></span>
+      </a>
+
+      <nav class="site-nav" id="siteNav" aria-label="Primary">
+        <a href="#overview">Overview</a>
+        <a href="#demo">Demo</a>
+        <a href="#trip">Trip</a>
+        <a href="#people">People</a>
+        <a href="#hardware">Hardware</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#mobile">Mobile</a>
+        <a href="#modules">Modules</a>
+        <a href="media.html">Media</a>
+        <a class="mobile-only" href="documentation.html">Evidence</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="btn btn-primary" href="documentation.html">Read the evidence</a>
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch color theme" aria-pressed="false">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+          </svg>
+        </button>
+        <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -------------------------------------------------->
+    <section class="hero" id="top">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">AI + IoT · Public buses · Local-first</p>
+            <h1>Every trip,<br><em>on the record.</em></h1>
+            <p class="hero-lede">
+              SafeTransit watches the driver for signs of drowsiness, counts every passenger
+              through the door, and puts the whole trip on one dashboard — before a warning
+              becomes an incident.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#overview">
+                See the system
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6"/>
+                </svg>
+              </a>
+              <a class="btn" href="#demo">Watch it run</a>
+            </div>
+            <div class="hero-meta" aria-label="System characteristics">
+              <span>2 live cameras</span>
+              <span>IR door counting</span>
+              <span>Local-first AI</span>
+            </div>
+          </div>
+
+          <div class="hero-media">
+            <figure class="shot">
+              <img src="assets/img/dashboard.jpg" alt="SafeTransit dashboard with driver and passenger live camera feeds, sensor node status and GPS status." decoding="async">
+              <figcaption>Live dashboard · cameras and vehicle sensors.</figcaption>
+            </figure>
+            <figure class="shot">
+              <img src="assets/img/gps.jpg" alt="SafeTransit GPS map with a live vehicle marker, speed and satellite status." decoding="async">
+              <figcaption>GPS · the same trip on the map.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="System at a glance">
+          <div class="stats-grid">
+            <div class="stat"><b>02</b><span>Camera feeds</span></div>
+            <div class="stat"><b>02</b><span>IR door beams</span></div>
+            <div class="stat"><b>01</b><span>Local server</span></div>
+            <div class="stat"><b>00</b><span>Cloud AI calls</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Index ------------------------------------------------>
+    <section class="page-index" aria-labelledby="page-index-title">
+      <div class="wrap">
+        <div class="index-head">
+          <div>
+            <span class="section-num">Index / 12 sections</span>
+            <h2 id="page-index-title">Five chapters, <em>one build.</em></h2>
+          </div>
+          <p>Follow the trip in order, or jump to the screen you need.</p>
+        </div>
+
+        <div class="index-grid">
+          <div class="index-chapter">
+            <span class="index-kicker">I</span>
+            <h3>The problem</h3>
+            <div class="index-links">
+              <a href="#overview"><span>01</span> Premise</a>
+            </div>
+          </div>
+
+          <div class="index-chapter">
+            <span class="index-kicker">II</span>
+            <h3>The trip</h3>
+            <div class="index-links">
+              <a href="#demo"><span>02</span> Demo</a>
+              <a href="#trip"><span>03</span> Trip</a>
+            </div>
+          </div>
+
+          <div class="index-chapter">
+            <span class="index-kicker">III</span>
+            <h3>People &amp; kit</h3>
+            <div class="index-links">
+              <a href="#people"><span>04</span> People</a>
+              <a href="#hardware"><span>05</span> Hardware</a>
+            </div>
+          </div>
+
+          <div class="index-chapter">
+            <span class="index-kicker">IV</span>
+            <h3>The screens</h3>
+            <div class="index-links">
+              <a href="#dashboard"><span>06</span> Dashboard</a>
+              <a href="#mobile"><span>07</span> Mobile</a>
+              <a href="#record"><span>08</span> Record</a>
+            </div>
+          </div>
+
+          <div class="index-chapter">
+            <span class="index-kicker">V</span>
+            <h3>The build</h3>
+            <div class="index-links">
+              <a href="#features"><span>09</span> Features</a>
+              <a href="#access"><span>10</span> Operations</a>
+              <a href="#modules"><span>11</span> Modules</a>
+              <a href="#email-proof"><span>12</span> Email proof</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview --------------------------------------------->
+    <section class="section" id="overview">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">01 / Premise</span>
+            <p>Two safety problems that are usually counted by two different people.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>Two risks. <em>One system.</em></h2>
+            <p>A driver's alertness and a bus's passenger load are watched separately, if at all. SafeTransit puts the driver camera, the door count, GPS, alerts and records on one local platform.</p>
+          </div>
+        </div>
+
+        <div class="overview-grid">
+          <div class="prose">
+            <p>
+              Public utility buses run on long shifts and tight turnarounds. A driver can be
+              fatigued without saying so, and a conductor can lose count during a crowded stop.
+              Both failures are quiet until something goes wrong. <strong>SafeTransit makes both
+              visible while the trip is still running.</strong>
+            </p>
+            <p>
+              The dashboard is a Django app on a laptop or small host on the vehicle's network.
+              Two ESP32-CAMs stream the driver and passenger cabin; an ESP32 sensor node counts
+              the door; a NEO-7M GPS node posts the fix; two vision models run on the host CPU —
+              MediaPipe Face Landmarker for the face and EfficientDet-Lite0 for objects. The mobile
+              app talks to the same server, so the conductor sees the same trip the operator does.
+            </p>
+            <blockquote class="pullquote">
+              “The warning is only useful if it arrives while there is still time to act.”
+            </blockquote>
+          </div>
+
+          <div class="principles">
+            <div class="principle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 8.5 12 4l9 4.5-9 4.5Z"/><path d="M3 12.5 12 17l9-4.5"/><path d="M3 16.5 12 21l9-4.5"/>
+              </svg>
+              <h3>See</h3>
+              <p>Driver and passenger feeds with the AI overlay on the dashboard, not a separate screen.</p>
+            </div>
+            <div class="principle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 18V9M4 9l4-5 4 5 4-5 4 5v9"/><path d="M4 18h16"/>
+              </svg>
+              <h3>Count</h3>
+              <p>Two IR beams at the door turn an entry or exit into a live capacity number.</p>
+            </div>
+            <div class="principle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/>
+              </svg>
+              <h3>Respond</h3>
+              <p>A buzzer in the cabin, a dashboard alert, an email, and a saved clip of the event.</p>
+            </div>
+            <div class="principle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 19V5M4 19h16"/><path d="m7 15 4-4 3 2 5-6"/>
+              </svg>
+              <h3>Review</h3>
+              <p>Analytics, reports, violation records and driver scorecards stay after the trip ends.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="system-flow" aria-labelledby="system-flow-title">
+          <div class="sysflow-head">
+            <div>
+              <span class="section-num">System flow</span>
+              <h3 id="system-flow-title">One trip, <em>five stages.</em></h3>
+            </div>
+            <p>Capture on the vehicle, process locally, decide on the dashboard, and keep the record after the shift.</p>
+          </div>
+
+          <div class="proof-carousel sysflow-carousel" data-sysflow-carousel tabindex="0" aria-roledescription="carousel" aria-label="System flow stages">
+            <div class="proof-slides">
+            <article class="proof-slide is-active" data-slide aria-hidden="false">
+              <figure class="proof-media sysflow-media">
+                <img src="assets/img/hardware-camera.jpg" alt="ESP32-CAM board with the OV2640 camera module." loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">01 / 05 · Capture</span>
+                <h3>Capture</h3>
+                <p>Two ESP32-CAM feeds, two IR beams at the door and a NEO-7M GPS fix.</p>
+                <span class="sysflow-tags">2 cameras · 2 beams · GPS</span>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media sysflow-media">
+                <img src="assets/img/hardware-node.jpg" alt="ESP32 sensor node wired to two IR beam modules." loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">02 / 05 · Edge</span>
+                <h3>Edge</h3>
+                <p>ESP32 boards stream MJPEG and post beam and GPS state over the vehicle Wi-Fi.</p>
+                <span class="sysflow-tags">ESP32 · Wi-Fi</span>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media sysflow-media">
+                <video controls preload="none" poster="assets/img/poster-drowsiness-trigger.jpg" playsinline>
+                  <source src="assets/video/drowsiness-trigger.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">03 / 05 · Local server</span>
+                <h3>Local server</h3>
+                <p>Django and MySQL on the vehicle host. MediaPipe reads the face and scores the drowsiness trigger; EfficientDet-Lite0 reads objects.</p>
+                <span class="sysflow-tags">Django · MySQL · drowsiness</span>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media sysflow-media">
+                <img src="assets/img/dashboard.jpg" alt="SafeTransit live dashboard with cameras, passenger count, map and device health." loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">04 / 05 · Operate</span>
+                <h3>Operate</h3>
+                <p>The dashboard and Android app show the same trip: cameras, count, map and alerts.</p>
+                <span class="sysflow-tags">Dashboard · Android</span>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media sysflow-media">
+                <video controls preload="none" poster="assets/img/poster-trip-review.jpg" playsinline>
+                  <source src="assets/video/trip-review.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">05 / 05 · Record</span>
+                <h3>Record</h3>
+                <p>Clips, violation rows, trip review, scorecards, logs and email stay after the shift.</p>
+                <span class="sysflow-tags">Clips · reports · email</span>
+              </div>
+            </article>
+            </div>
+
+            <div class="proof-nav">
+              <button class="proof-arrow" type="button" data-prev aria-label="Previous system flow stage">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+              </button>
+              <div class="proof-dots" role="group" aria-label="System flow stages">
+              <button class="proof-dot" type="button" data-dot="0" aria-current="true" aria-label="Show system flow stage 1"></button>
+              <button class="proof-dot" type="button" data-dot="1" aria-current="false" aria-label="Show system flow stage 2"></button>
+              <button class="proof-dot" type="button" data-dot="2" aria-current="false" aria-label="Show system flow stage 3"></button>
+              <button class="proof-dot" type="button" data-dot="3" aria-current="false" aria-label="Show system flow stage 4"></button>
+              <button class="proof-dot" type="button" data-dot="4" aria-current="false" aria-label="Show system flow stage 5"></button>
+              </div>
+              <span class="proof-count" data-count aria-live="polite">01 / 05</span>
+              <button class="proof-arrow" type="button" data-next aria-label="Next system flow stage">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <p class="sysflow-foot"><strong>Local-first.</strong> Cameras, counting, AI and records stay on the vehicle host; email is the only outside service.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo ------------------------------------------------->
+    <section class="section" id="demo">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">02 / Demo</span>
+            <p>Bench footage, not a render.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>Watch a warning <em>land.</em></h2>
+            <p>Two vision models read the driver feed: MediaPipe Face Landmarker for eye, mouth and head metrics, and EfficientDet-Lite0 for phone, bottle and cup objects. A threshold becomes something the driver and the operator can act on.</p>
+          </div>
+        </div>
+
+        <div class="demo-grid">
+          <figure class="video-frame video-app">
+            <video controls preload="metadata" poster="assets/img/poster-driver.jpg" playsinline>
+              <source src="assets/video/driver-alert.mp4" type="video/mp4">
+              Your browser does not support the video element.
+            </video>
+            <figcaption><b>Driver camera · trigger alert + live notification</b>Live feed, two-model AI overlay, buzzer and dashboard alert. Demo clip from the project's bench build.</figcaption>
+          </figure>
+
+          <ol class="demo-list">
+            <li>
+              <span class="num">01</span>
+              <div><b>The feed is read</b><span>MediaPipe Face Landmarker measures eye openness, mouth openness, closed time, yawns and head pose. EfficientDet-Lite0 finds phone, bottle and cup objects.</span></div>
+            </li>
+            <li>
+              <span class="num">02</span>
+              <div><b>A threshold becomes an alert</b><span>The drowsiness stage and score rise; the in-cabin buzzer sounds and the dashboard raises an alert.</span></div>
+            </li>
+            <li>
+              <span class="num">03</span>
+              <div><b>The moment is kept</b><span>The alert clip is saved to the alerts page, where it can be reviewed, downloaded or moved to the recycle bin.</span></div>
+            </li>
+            <li>
+              <span class="num">04</span>
+              <div><b>The operator sees it too</b><span>The same event appears in the bell notifications and can be sent to the registered email address.</span></div>
+            </li>
+          </ol>
+        </div>
+
+        <div class="video-grid">
+          <figure class="video-frame video-169">
+            <video controls preload="metadata" poster="assets/img/poster-passenger.jpg" playsinline>
+              <source src="assets/video/passenger-count.mp4" type="video/mp4">
+            </video>
+            <figcaption><b>Door counter</b>Two IR beams at the door; the order of the breaks decides entry or exit.</figcaption>
+          </figure>
+          <figure class="video-frame video-app">
+            <video controls preload="metadata" poster="assets/img/poster-gps.jpg" playsinline>
+              <source src="assets/video/gps-tracking.mp4" type="video/mp4">
+            </video>
+            <figcaption><b>GPS tracking</b>The vehicle's fix, speed and device health update on the dashboard map.</figcaption>
+          </figure>
+        </div>
+
+        <div class="model-pair">
+          <article class="model-card">
+            <span class="section-num">Model 01</span>
+            <h3>MediaPipe Face Landmarker</h3>
+            <p>478 face landmarks drive eye openness, mouth openness, PERCLOS, closed time and head pose. The hand task adds the ear/mouth geometry used by the behaviour rules.</p>
+          </article>
+          <article class="model-card">
+            <span class="section-num">Model 02</span>
+            <h3>EfficientDet-Lite0</h3>
+            <p>A COCO object detector for the phone, bottle and cup in the frame. Its labels are combined with hand landmarks to tell phone call, texting and drinking apart.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trip ------------------------------------------------->
+    <section class="section" id="trip">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">03 / Trip</span>
+            <p>Four moments the system is built around.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>Before. Boarding. <em>Driving. After.</em></h2>
+            <p>The web dashboard and the mobile app follow the same trip: a driver is checked in, the door is counted, the cabin is watched, and the shift leaves a record.</p>
+          </div>
+        </div>
+
+        <div class="flow">
+          <article class="flow-step">
+            <div class="flow-copy">
+              <span class="flow-num">01 / Before</span>
+              <h3>Check the driver before the engine.</h3>
+              <p>A six-question self-assessment produces a readiness score, followed by a five-question knowledge quiz. The flow then asks for a face scan and, where available, an ID scan; the operator assigns the active driver on the dashboard.</p>
+              <a class="link-arrow" href="documentation.html#functional">Read the functional evidence
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+            <div class="phone">
+              <img src="assets/img/trip-preshift.jpg" alt="SafeTransit pre-shift driver check showing question 1 of 6 and a readiness score." decoding="async">
+            </div>
+          </article>
+
+          <article class="flow-step">
+            <div class="flow-copy">
+              <span class="flow-num">02 / Boarding</span>
+              <h3>Count the door, not the crowd.</h3>
+              <p>Two IR beams sit across the doorway. The direction comes from which beam breaks first; a debounce and a stuck-sensor fallback keep a misaligned module from freezing the count.</p>
+              <a class="link-arrow" href="#dashboard">See the capacity meter
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+            <figure class="shot">
+              <img src="assets/img/trip-passenger.jpg" alt="Two IR beam modules mounted across a door frame with an ESP32 on the bench." decoding="async">
+              <figcaption>Door rig · two beams, one ESP32 node.</figcaption>
+            </figure>
+          </article>
+
+          <article class="flow-step">
+            <div class="flow-copy">
+              <span class="flow-num">03 / Driving</span>
+              <h3>Keep the driver in the loop.</h3>
+              <p>The driver camera feeds two models on the host: MediaPipe Face Landmarker for drowsiness and EfficientDet-Lite0 for objects. Both update the live overlay, while GPS and device health update beside them. A crossing sounds the buzzer and raises the alert.</p>
+              <a class="link-arrow" href="#hardware">See the hardware
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+            <figure class="shot">
+              <img src="assets/img/trip-driver.jpg" alt="SafeTransit driver camera page with a live face feed and the AI metrics overlay." decoding="async">
+              <figcaption>Driver cam · AI overlay and camera health.</figcaption>
+            </figure>
+          </article>
+
+          <article class="flow-step">
+            <div class="flow-copy">
+              <span class="flow-num">04 / After</span>
+              <h3>Leave a record, not a rumour.</h3>
+              <p>Analytics and reports turn the trip into safety scores, alert frequency, passenger trends and driver scorecards. Violations can be filtered, exported and reviewed after the shift.</p>
+              <a class="link-arrow" href="#record">See the record
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+            <figure class="shot">
+              <img src="assets/img/reports.jpg" alt="SafeTransit fleet performance reports page with safety score, alert frequency and passenger trend." decoding="async">
+              <figcaption>Reports · one shift, summarised.</figcaption>
+            </figure>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- People ------------------------------------------------>
+    <section class="section" id="people">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">04 / People</span>
+            <p>The driver is a record, not a name in a list.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>A driver, <em>checked in.</em></h2>
+            <p>Profiles, registration and identity sit before the trip. The web dashboard keeps the driver record and scorecard; the phone handles the form, the ID scan and the face scan.</p>
+          </div>
+        </div>
+
+        <div class="proof-carousel people-carousel" data-people-carousel tabindex="0" aria-roledescription="carousel" aria-label="Driver identity pages">
+          <div class="proof-slides">
+            <article class="proof-slide is-active" data-slide aria-hidden="false">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-driver-profile.jpg" playsinline>
+                  <source src="assets/video/driver-profile.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">01 / 04 · Web · 12s</span>
+                <h3>Driver profiles &amp; scorecards</h3>
+                <p>Each driver has a profile, a safety score, recent activity and a printable scorecard.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-add-driver-mobile.jpg" playsinline>
+                  <source src="assets/video/add-driver-mobile.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">02 / 04 · Mobile · 12s</span>
+                <h3>Add a driver</h3>
+                <p>Register from the phone: name, ID number, email and licence expiry.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-id-scan.jpg" playsinline>
+                  <source src="assets/video/id-scan.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">03 / 04 · Mobile · 10s</span>
+                <h3>Scan an ID</h3>
+                <p>Frame the licence and read the barcode; the fields fill from the card. The public clip blurs the ID.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-scan-face.jpg" playsinline>
+                  <source src="assets/video/scan-face.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">04 / 04 · Mobile · 16s</span>
+                <h3>Scan a face</h3>
+                <p>The liveness steps come first. A confident match switches the active driver automatically; a weak match leaves the current driver in place.</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="proof-nav">
+            <button class="proof-arrow" type="button" data-prev aria-label="Previous driver page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            </button>
+            <div class="proof-dots" role="group" aria-label="Driver pages">
+              <button class="proof-dot" type="button" data-dot="0" aria-current="true" aria-label="Show driver page 1"></button>
+              <button class="proof-dot" type="button" data-dot="1" aria-current="false" aria-label="Show driver page 2"></button>
+              <button class="proof-dot" type="button" data-dot="2" aria-current="false" aria-label="Show driver page 3"></button>
+              <button class="proof-dot" type="button" data-dot="3" aria-current="false" aria-label="Show driver page 4"></button>
+            </div>
+            <span class="proof-count" data-count aria-live="polite">01 / 04</span>
+            <button class="proof-arrow" type="button" data-next aria-label="Next driver page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="media-note">
+          <strong>Identity media.</strong> The ID clip is blurred because the source card contains a real licence. The driver profile and face clips use the project team's demo records.
+          <br><strong>Automatic switch.</strong> A confident face match changes the active driver on the dashboard and logs the change; a weak match leaves the current driver in place.
+        </div>
+
+        <p style="margin-top:18px">
+          <a class="link-arrow" href="media.html">Open the full media library — every CPS clip and screenshot
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </p>
+      </div>
+    </section>
+
+    <!-- Hardware --------------------------------------------->
+    <section class="section" id="hardware">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">05 / Hardware</span>
+            <p>Low-cost parts, accessible on the bench.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>A kit that can be <em>repaired.</em></h2>
+            <p>Two cameras, one sensor node and one GPS module. Everything is off-the-shelf, documented and replaceable — the opposite of a sealed black box.</p>
+          </div>
+        </div>
+
+        <div class="proof-carousel hardware-carousel" data-hardware-carousel tabindex="0" aria-roledescription="carousel" aria-label="Hardware pages">
+          <div class="proof-slides">
+            <article class="proof-slide is-active" data-slide aria-hidden="false">
+              <figure class="proof-media">
+                <img src="assets/img/hardware-camera.jpg" alt="Camera pair hardware." loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">01 / 04 · Camera</span>
+                <h3>Camera pair</h3>
+                <p>Two ESP32-CAM boards: one on the driver, one over the passenger cabin. Each streams MJPEG over the vehicle Wi-Fi.</p>
+                <div class="tag-row" style="margin-top:18px"><span class="tag">ESP32-CAM</span><span class="tag">OV2640</span><span class="tag">MJPEG</span></div>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/hardware-ir.jpg" alt="Door counter hardware." loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">02 / 04 · Sensor</span>
+                <h3>Door counter</h3>
+                <p>Two IR beam modules across the doorway. The sensor node posts each break as an entry or exit, and flags a beam that stays low.</p>
+                <div class="tag-row" style="margin-top:18px"><span class="tag">IR</span><span class="tag">2 beams</span><span class="tag">GPIO 25 / 33</span></div>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/hardware-node.jpg" alt="Sensor node hardware." loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">03 / 04 · Sensor</span>
+                <h3>Sensor node</h3>
+                <p>The ESP32 reads the beams, debounces them and posts passenger state to the local server. It keeps working without the internet.</p>
+                <div class="tag-row" style="margin-top:18px"><span class="tag">ESP32</span><span class="tag">door logic</span><span class="tag">Wi-Fi</span></div>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/hardware-gps-case.jpg" alt="GPS + buzzer hardware." loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">04 / 04 · Location</span>
+                <h3>GPS + buzzer</h3>
+                <p>A NEO-7M module reports latitude, longitude, speed and satellite health. The same node drives the in-cabin buzzer on an alert.</p>
+                <div class="tag-row" style="margin-top:18px"><span class="tag">NEO-7M</span><span class="tag">UART</span><span class="tag">buzzer</span></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="proof-nav">
+            <button class="proof-arrow" type="button" data-prev aria-label="Previous hardware page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            </button>
+            <div class="proof-dots" role="group" aria-label="Hardware pages">
+              <button class="proof-dot" type="button" data-dot="0" aria-current="true" aria-label="Show hardware page 1"></button>
+              <button class="proof-dot" type="button" data-dot="1" aria-current="false" aria-label="Show hardware page 2"></button>
+              <button class="proof-dot" type="button" data-dot="2" aria-current="false" aria-label="Show hardware page 3"></button>
+              <button class="proof-dot" type="button" data-dot="3" aria-current="false" aria-label="Show hardware page 4"></button>
+            </div>
+            <span class="proof-count" data-count aria-live="polite">01 / 04</span>
+            <button class="proof-arrow" type="button" data-next aria-label="Next hardware page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.6 17.2A2 2 0 0 0 4.3 20h15.4a2 2 0 0 0 1.7-2.8L13.7 3.9a2 2 0 0 0-3.4 0Z"/>
+          </svg>
+          <div>
+            <h4>This is a prototype, not a certified safety device.</h4>
+            <p>Camera resolution, cabin lighting, Wi-Fi congestion and GPS obstruction all affect what the system can see. Those limits are documented rather than hidden.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard -------------------------------------------->
+    <section class="section" id="dashboard">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">06 / Dashboard</span>
+            <p>The operator's whole trip, on one screen.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>One screen for <em>the whole trip.</em></h2>
+            <p>The web dashboard is where the cameras, the count, the map and the device health meet. It is built for a quick glance, not a click-through.</p>
+          </div>
+        </div>
+
+        <div class="software-grid">
+          <div>
+            <p class="lede">Live cameras on the left, capacity and route on the right, device health underneath. If a camera drops, the card says so; if a beam sticks, the sensor page says which one.</p>
+            <ul class="feature-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+                <span><b>Driver + passenger feeds.</b> The driver feed carries the AI overlay; both cameras have their own health card.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+                <span><b>Capacity meter.</b> Current passengers, total today and the 40-seat limit, updated from the door count.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+                <span><b>Live GPS.</b> Leaflet map with the vehicle fix, speed, satellites and the last update time.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+                <span><b>Alerts and clips.</b> Severity, time, the saved clip and the link to the event that caused it.</span>
+              </li>
+            </ul>
+          </div>
+
+          <figure class="shot">
+            <img src="assets/img/dashboard.jpg" alt="SafeTransit dashboard showing driver and passenger live cameras, sensor node status and GPS status." decoding="async">
+            <figcaption>Dashboard · live cameras and vehicle sensors.</figcaption>
+          </figure>
+        </div>
+
+        <div class="media-pair">
+          <figure class="shot">
+            <img src="assets/img/sensors.jpg" alt="SafeTransit device health page showing both ESP32-CAMs, IR sensor node, GPS module and safety alert monitor." decoding="async">
+            <figcaption>Device health · four parts, one status page.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="assets/img/gps.jpg" alt="SafeTransit GPS map page with a live vehicle marker and speed." decoding="async">
+            <figcaption>GPS · Leaflet map and live fix.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile ----------------------------------------------->
+    <section class="section" id="mobile">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">07 / Mobile</span>
+            <p>The conductor does not need the laptop.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>The same trip, <em>in the conductor's hand.</em></h2>
+            <p>The Android app is a companion, not a second product: it finds the same server, shows the same feed and raises the same alert.</p>
+          </div>
+        </div>
+
+        <div class="software-grid">
+          <div>
+            <p class="lede">The app opens on the live cameras, with the passenger count and pre-shift access one tap away. If the server moves, the app finds it over mDNS, scans the subnet, or accepts a manual address.</p>
+            <ul class="feature-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+                <span><b>Live cameras and sensors.</b> Driver and passenger feeds, vehicle sensor health and the pre-shift quiz.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+                <span><b>Device setup without an account.</b> Join the device hotspot, send it the Wi-Fi details, find its address on the network.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+                <span><b>Server discovery.</b> mDNS at <code>safetransit.local</code>, a local subnet scan, or a typed IP.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+                <span><b>Role-aware access.</b> Operators manage the fleet; conductors monitor the trip and the alerts.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="phone-row">
+            <div class="phone">
+              <img src="assets/img/mobile-live.jpg" alt="SafeTransit Android app showing driver and passenger live camera feeds and the vehicle sensors tab." decoding="async">
+            </div>
+            <div class="phone">
+              <img src="assets/img/mobile-setup.jpg" alt="SafeTransit Android app device setup screen with three steps for joining the hotspot, sending Wi-Fi and finding the address." decoding="async">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Record ----------------------------------------------->
+    <section class="section" id="record">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">08 / Record</span>
+            <p>The shift ends; the evidence does not.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>After the trip, <em>the evidence is already there.</em></h2>
+            <p>Analytics and reports turn raw events into a safety score, a passenger trend and a driver record that an operator can actually review.</p>
+          </div>
+        </div>
+
+        <figure class="video-frame video-app" style="margin-bottom:24px">
+          <video controls preload="metadata" poster="assets/img/poster-live-safety-trends.jpg" playsinline>
+            <source src="assets/video/live-safety-trends.mp4" type="video/mp4">
+            Your browser does not support the video element.
+          </video>
+          <figcaption><b>Live safety trends</b>Safety score, alert frequency, passenger trend and AI insights for the selected period.</figcaption>
+        </figure>
+
+        <div class="media-pair">
+          <figure class="shot">
+            <img src="assets/img/analytics.jpg" alt="SafeTransit analytics page showing driver analysis, passenger flow analysis, GPS movement analysis and system health." decoding="async">
+            <figcaption>Analytics · driver, passenger, GPS and health in one view.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="assets/img/reports.jpg" alt="SafeTransit reports page showing safety score, alert frequency, passenger trend and AI safety insights." decoding="async">
+            <figcaption>Reports · safety score, alert frequency and passenger trend.</figcaption>
+          </figure>
+        </div>
+
+        <div class="feature-columns">
+          <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+              <span><b>Safety trends.</b> Drowsiness score, alert frequency and passenger load over a selected date range.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+              <span><b>Violation breakdown.</b> Drowsy, phone, smoking and distracted events per driver, with a risk band.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+              <span><b>Trip review.</b> Each finished shift can be reviewed and flagged — or cleared — with a reason.</span>
+            </li>
+          </ul>
+          <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+              <span><b>Driver scorecards.</b> A per-driver safety record with a printable PDF scorecard.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+              <span><b>Exports.</b> Excel, CSV and PDF from analytics, reports, violations and trips.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>
+              <span><b>End-of-shift email.</b> The registered address gets the driver's violation summary, when SMTP is configured.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="subhead" id="violations">
+          <div>
+            <span class="section-num">08.1 / Violations</span>
+            <h3>What counts as <em>a violation.</em></h3>
+          </div>
+          <p>
+            The camera and the pre-shift check feed one violation record. Each event carries a label,
+            a timestamp and, when a clip is available, the footage. The end-of-shift report rolls them
+            up per driver.
+          </p>
+        </div>
+
+        <div class="violation-grid">
+          <article class="violation-card">
+            <div class="v-top"><span class="v-num">01</span><span class="violation-tag">Fatigue</span></div>
+            <h4>Drowsiness</h4>
+            <p>Eyes closing for a sustained period; eye openness, closed time and PERCLOS cross the driver's calibrated threshold.</p>
+          </article>
+          <article class="violation-card">
+            <div class="v-top"><span class="v-num">02</span><span class="violation-tag">Critical</span></div>
+            <h4>Severe drowsiness</h4>
+            <p>A danger stage rather than a warning: the buzzer and dashboard alert fire immediately and the clip is kept.</p>
+          </article>
+          <article class="violation-card">
+            <div class="v-top"><span class="v-num">03</span><span class="violation-tag">Fatigue</span></div>
+            <h4>Yawning</h4>
+            <p>Mouth openness is counted as a yawn; repeated yawns raise the drowsiness score even before the eyes close.</p>
+          </article>
+          <article class="violation-card">
+            <div class="v-top"><span class="v-num">04</span><span class="violation-tag">Phone</span></div>
+            <h4>Phone call</h4>
+            <p>A hand held at the ear while the vehicle is moving. The clip is labelled <code>PHONE_CALL</code>.</p>
+          </article>
+          <article class="violation-card">
+            <div class="v-top"><span class="v-num">05</span><span class="violation-tag">Phone</span></div>
+            <h4>Phone texting</h4>
+            <p>A phone held in the hand away from the ear. A head-down posture can also be caught as distracted.</p>
+          </article>
+          <article class="violation-card">
+            <div class="v-top"><span class="v-num">06</span><span class="violation-tag">Behaviour</span></div>
+            <h4>Smoking</h4>
+            <p>A hand at the mouth with pinched fingers. This is a geometry heuristic, not a trained cigarette detector.</p>
+          </article>
+          <article class="violation-card">
+            <div class="v-top"><span class="v-num">07</span><span class="violation-tag">Behaviour</span></div>
+            <h4>Drinking</h4>
+            <p>A bottle, cup or can in the hand moving to the mouth; the label is <code>DRINKING</code>.</p>
+          </article>
+          <article class="violation-card">
+            <div class="v-top"><span class="v-num">08</span><span class="violation-tag">Attention</span></div>
+            <h4>Distracted</h4>
+            <p>Head turned away from the road or tilted down beyond the calibrated angle for long enough to count.</p>
+          </article>
+          <article class="violation-card">
+            <div class="v-top"><span class="v-num">09</span><span class="violation-tag">Readiness</span></div>
+            <h4>Pre-shift</h4>
+            <p>A failed readiness check or a missing quiz pass blocks the shift until the driver completes it.</p>
+          </article>
+        </div>
+
+        <div class="violation-flow">
+          <b>Event</b><span class="sep">→</span><span>alert + clip</span><span class="sep">→</span><span>violation record</span><span class="sep">→</span><span>3 flags / day</span><span class="sep">→</span><span>new trips blocked</span><span class="sep">→</span><span>end-of-shift email</span>
+        </div>
+        <p class="violation-note">
+          <strong>Honest scope.</strong> Phone, smoking, drinking and distracted labels are geometry heuristics. Drinking from a bottle, eating, or resting a hand on the chin can trip them; the full limits are in the evidence page.
+        </p>
+
+        <div class="subhead" style="margin-top:40px">
+          <div>
+            <span class="section-num">08.2 / Trigger demos</span>
+            <h3>See the trigger <em>fire.</em></h3>
+          </div>
+          <p>Three clips from the bench build: the AI label changes, the alert is raised, and the event is saved to the record.</p>
+        </div>
+
+        <div class="proof-carousel trigger-carousel" data-trigger-carousel tabindex="0" aria-roledescription="carousel" aria-label="Trigger demos">
+          <div class="proof-slides">
+            <article class="proof-slide is-active" data-slide aria-hidden="false">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-drowsiness-trigger.jpg" playsinline>
+                  <source src="assets/video/drowsiness-trigger.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">01 / 03 · Drowsiness · 20s</span>
+                <h3>Drowsiness trigger</h3>
+                <p>Eyes close past the threshold; the drowsiness score rises to 65/100 and the alert is raised.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-phone-call-trigger.jpg" playsinline>
+                  <source src="assets/video/phone-call-trigger.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">02 / 03 · Phone call · 22s</span>
+                <h3>Phone call trigger</h3>
+                <p>The hand stays at the ear; the overlay changes to <code>BEHAVIOUR: PHONE_CALL</code>.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-phone-texting-trigger.jpg" playsinline>
+                  <source src="assets/video/phone-texting-trigger.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">03 / 03 · Phone texting · 16s</span>
+                <h3>Phone texting trigger</h3>
+                <p>The phone is held in frame; the overlay changes to <code>BEHAVIOUR: PHONE_TEXTING</code>.</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="proof-nav">
+            <button class="proof-arrow" type="button" data-prev aria-label="Previous trigger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            </button>
+            <div class="proof-dots" role="group" aria-label="Trigger demos">
+              <button class="proof-dot" type="button" data-dot="0" aria-current="true" aria-label="Show trigger 1"></button>
+              <button class="proof-dot" type="button" data-dot="1" aria-current="false" aria-label="Show trigger 2"></button>
+              <button class="proof-dot" type="button" data-dot="2" aria-current="false" aria-label="Show trigger 3"></button>
+            </div>
+            <span class="proof-count" data-count aria-live="polite">01 / 03</span>
+            <button class="proof-arrow" type="button" data-next aria-label="Next trigger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features --------------------------------------------->
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">09 / Features</span>
+            <p>Every module that is actually in the build.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>One system. <em>Every job in the build.</em></h2>
+            <p>A compact map of the modules: what watches, what counts, what alerts, what records, and what the operator can do afterwards.</p>
+          </div>
+        </div>
+
+        <div class="feature-matrix">
+          <a class="feature-tile" href="#dashboard"><span class="n">01</span><h3>Live cameras</h3><p>Driver and passenger feeds with camera health.</p></a>
+          <a class="feature-tile" href="#violations"><span class="n">02</span><h3>Drowsiness + behaviour</h3><p>Nine labels from MediaPipe Face Landmarker + EfficientDet-Lite0.</p></a>
+          <a class="feature-tile" href="#people"><span class="n">03</span><h3>Pre-shift identity</h3><p>Quiz, face scan, ID scan and automatic driver switch.</p></a>
+          <a class="feature-tile" href="#trip"><span class="n">04</span><h3>Door counting</h3><p>IR entry/exit with a 40-seat capacity meter.</p></a>
+          <a class="feature-tile" href="#dashboard"><span class="n">05</span><h3>GPS tracking</h3><p>Live map, speed, satellites and fix age.</p></a>
+          <a class="feature-tile" href="#record"><span class="n">06</span><h3>Alerts + clips</h3><p>Buzzer, dashboard alert, email and saved footage.</p></a>
+          <a class="feature-tile" href="#people"><span class="n">07</span><h3>Driver profiles</h3><p>Score, flags, recent activity and scorecard PDF.</p></a>
+          <a class="feature-tile" href="#record"><span class="n">08</span><h3>Violation reports</h3><p>Per-driver totals, risk bands and exports.</p></a>
+          <a class="feature-tile" href="#record"><span class="n">09</span><h3>Trip review</h3><p>Review a finished shift, then flag or clear it.</p></a>
+          <a class="feature-tile" href="#record"><span class="n">10</span><h3>Analytics + exports</h3><p>Safety trends, passenger flow and CSV/Excel/PDF.</p></a>
+          <a class="feature-tile" href="#access"><span class="n">11</span><h3>Accounts + OTP</h3><p>Roles, approval, backup, restore and system logs.</p></a>
+          <a class="feature-tile" href="#mobile"><span class="n">12</span><h3>Mobile + setup</h3><p>Android app, mDNS discovery and device setup.</p></a>
+        </div>
+
+        <p style="margin-top:20px">
+          <a class="link-arrow" href="#modules">Watch the admin and review modules
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </p>
+      </div>
+    </section>
+
+    <!-- Access ----------------------------------------------->
+    <section class="section" id="access">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">10 / Operations</span>
+            <p>Accounts, devices and a way back.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>Setup is a job, <em>not a secret.</em></h2>
+            <p>The practical parts of running SafeTransit: who gets in, how a device is found, how a database is backed up, and where to look when something is missing.</p>
+          </div>
+        </div>
+
+        <div class="proof-carousel access-carousel" data-access-carousel tabindex="0" aria-roledescription="carousel" aria-label="Operations pages">
+          <div class="proof-slides">
+            <article class="proof-slide is-active" data-slide aria-hidden="false">
+              <figure class="proof-media">
+                <img src="assets/img/poster-add-delete-user.jpg" alt="Accounts and roles — SafeTransit" loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">01 / 06 · Access</span>
+                <h3>Accounts and roles</h3>
+                <p>Operators manage users, devices, violations and reports; conductors see the live trip and its alerts.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/poster-account-activation.jpg" alt="OTP activation — SafeTransit" loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">02 / 06 · Access</span>
+                <h3>OTP activation</h3>
+                <p>A new account is confirmed by an email code and approved by the operator before it can sign in.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/poster-device-setup.jpg" alt="Device setup — SafeTransit" loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">03 / 06 · Devices</span>
+                <h3>Device setup</h3>
+                <p>Camera IPs, the sensor node and the GPS are configured from the dashboard or the phone's setup flow.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/poster-import-export.jpg" alt="Backup and restore — SafeTransit" loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">04 / 06 · Data</span>
+                <h3>Backup and restore</h3>
+                <p>Export the database and the dashboard data, import a previous backup, and keep a copy off the laptop.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/email-report.jpg" alt="Alert email — SafeTransit" loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">05 / 06 · Email</span>
+                <h3>Alert email</h3>
+                <p>With an SMTP account configured, the operator and the registered driver receive the alert or the end-of-shift summary.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/poster-system-logs.jpg" alt="System log — SafeTransit" loading="lazy" decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">06 / 06 · Audit</span>
+                <h3>System log</h3>
+                <p>Account changes, deletions and alert activity are recorded so an operator can see what changed and when.</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="proof-nav">
+            <button class="proof-arrow" type="button" data-prev aria-label="Previous operations page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            </button>
+            <div class="proof-dots" role="group" aria-label="Operations pages">
+              <button class="proof-dot" type="button" data-dot="0" aria-current="true" aria-label="Show operations page 1"></button>
+              <button class="proof-dot" type="button" data-dot="1" aria-current="false" aria-label="Show operations page 2"></button>
+              <button class="proof-dot" type="button" data-dot="2" aria-current="false" aria-label="Show operations page 3"></button>
+              <button class="proof-dot" type="button" data-dot="3" aria-current="false" aria-label="Show operations page 4"></button>
+              <button class="proof-dot" type="button" data-dot="4" aria-current="false" aria-label="Show operations page 5"></button>
+              <button class="proof-dot" type="button" data-dot="5" aria-current="false" aria-label="Show operations page 6"></button>
+            </div>
+            <span class="proof-count" data-count aria-live="polite">01 / 06</span>
+            <button class="proof-arrow" type="button" data-next aria-label="Next operations page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <p class="proof-note">Screens use demo accounts. Use the arrows, the dots, or the ← → keys.</p>
+      </div>
+    </section>
+
+    <!-- Modules ---------------------------------------------->
+    <section class="section" id="modules">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">11 / Modules</span>
+            <p>One clip per page.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>The rest of the build, <em>on video.</em></h2>
+            <p>Twelve pages, one task each. Every clip has an explanation of what the screen is doing, so the page reads like a walkthrough instead of a wall of thumbnails.</p>
+          </div>
+        </div>
+
+        <div class="proof-carousel module-carousel" data-module-carousel tabindex="0" aria-roledescription="carousel" aria-label="Module videos">
+          <div class="proof-slides">
+            <article class="proof-slide is-active" data-slide aria-hidden="false">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-bulk-upload.jpg" playsinline>
+                  <source src="assets/video/bulk-upload.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">01 / 12 · Admin · 30s</span>
+                <h3>Bulk upload drivers</h3>
+                <p>The roster starts empty. Bulk upload reads a CSV, reports how many drivers were created or skipped, then fills the table.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-passenger-in-1.jpg" playsinline>
+                  <source src="assets/video/passenger-in-1.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">02 / 12 · Passenger · 15s</span>
+                <h3>Passenger in — dashboard</h3>
+                <p>A passenger breaks the entry beam. The dashboard raises Passengers on board and keeps the trip total.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-passenger-out-1.jpg" playsinline>
+                  <source src="assets/video/passenger-out-1.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">03 / 12 · Passenger · 20s</span>
+                <h3>Passenger out — dashboard</h3>
+                <p>The exit beam lowers the live count without resetting the trip total.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-login.jpg" playsinline>
+                  <source src="assets/video/login.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">04 / 12 · Accounts · 10s</span>
+                <h3>Web login</h3>
+                <p>The operator signs in with email and password and lands on the live dashboard.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-account-activation.jpg" playsinline>
+                  <source src="assets/video/account-activation.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">05 / 12 · Accounts · 85s</span>
+                <h3>Account activation</h3>
+                <p>Create the account, receive the six-digit code, verify the email, then wait for operator approval before the first sign-in.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-recordings-clips.jpg" playsinline>
+                  <source src="assets/video/recordings-clips.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">06 / 12 · Alerts · 14s</span>
+                <h3>Recordings &amp; deleted clips</h3>
+                <p>Review an alert clip, delete it to the recycle bin, then restore it. Permanent delete is a separate action.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-login-mobile.jpg" playsinline>
+                  <source src="assets/video/login-mobile.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">07 / 12 · Mobile · 10s</span>
+                <h3>Mobile login</h3>
+                <p>The driver signs in on Android and sets the server address; the app opens on the live dashboard.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-add-delete-user.jpg" playsinline>
+                  <source src="assets/video/add-delete-user.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">08 / 12 · Accounts · 24s</span>
+                <h3>User management — add &amp; delete</h3>
+                <p>Add an operator or conductor, set the role, delete an account and restore a recently deleted user.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-violation-reports.jpg" playsinline>
+                  <source src="assets/video/violation-reports.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">09 / 12 · Reports · 22s</span>
+                <h3>Violation reports</h3>
+                <p>Filter by driver and period. Each row is a violation with its label and time, ready to export.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-trip-review.jpg" playsinline>
+                  <source src="assets/video/trip-review.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">10 / 12 · Reports · 18s</span>
+                <h3>Trip review</h3>
+                <p>Open a finished trip, review the evidence, then flag or clear the driver with a note.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-system-logs.jpg" playsinline>
+                  <source src="assets/video/system-logs.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">11 / 12 · Admin · 24s</span>
+                <h3>System logs</h3>
+                <p>The log records account changes, deletions and alert activity; expand a row for details.</p>
+              </div>
+            </article>
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media module-media">
+                <video controls preload="none" poster="assets/img/poster-device-setup.jpg" playsinline>
+                  <source src="assets/video/device-setup.mp4" type="video/mp4">
+                  Your browser does not support the video element.
+                </video>
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">12 / 12 · Mobile · 47s</span>
+                <h3>Device setup</h3>
+                <p>Join the device hotspot, send the Wi-Fi details, scan the network and save the camera, sensor and GPS addresses.</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="proof-nav">
+            <button class="proof-arrow" type="button" data-prev aria-label="Previous module">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            </button>
+            <div class="proof-dots" role="group" aria-label="Module pages">
+              <button class="proof-dot" type="button" data-dot="0" aria-current="true" aria-label="Show module 1"></button>
+              <button class="proof-dot" type="button" data-dot="1" aria-current="false" aria-label="Show module 2"></button>
+              <button class="proof-dot" type="button" data-dot="2" aria-current="false" aria-label="Show module 3"></button>
+              <button class="proof-dot" type="button" data-dot="3" aria-current="false" aria-label="Show module 4"></button>
+              <button class="proof-dot" type="button" data-dot="4" aria-current="false" aria-label="Show module 5"></button>
+              <button class="proof-dot" type="button" data-dot="5" aria-current="false" aria-label="Show module 6"></button>
+              <button class="proof-dot" type="button" data-dot="6" aria-current="false" aria-label="Show module 7"></button>
+              <button class="proof-dot" type="button" data-dot="7" aria-current="false" aria-label="Show module 8"></button>
+              <button class="proof-dot" type="button" data-dot="8" aria-current="false" aria-label="Show module 9"></button>
+              <button class="proof-dot" type="button" data-dot="9" aria-current="false" aria-label="Show module 10"></button>
+              <button class="proof-dot" type="button" data-dot="10" aria-current="false" aria-label="Show module 11"></button>
+              <button class="proof-dot" type="button" data-dot="11" aria-current="false" aria-label="Show module 12"></button>
+            </div>
+            <span class="proof-count" data-count aria-live="polite">01 / 12</span>
+            <button class="proof-arrow" type="button" data-next aria-label="Next module">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <p class="proof-note">Use the arrows, the dots, or the ← → keys. Playing a clip and moving on pauses the previous one.</p>
+      </div>
+    </section>
+
+    <!-- Email proof ------------------------------------------>
+    <section class="section" id="email-proof">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-side">
+            <span class="section-num">12 / Email proof</span>
+            <p>The alert leaves the dashboard.</p>
+          </div>
+          <div class="section-head-main">
+            <h2>The email is <em>the proof.</em></h2>
+            <p>Auto-emailing is easy to claim. These are the three screens that show it: the operator’s decision, the report the driver receives, and the message sitting in Sent.</p>
+          </div>
+        </div>
+
+        <div class="proof-carousel" data-proof-carousel tabindex="0" aria-roledescription="carousel" aria-label="Auto-email proof">
+          <div class="proof-slides">
+            <article class="proof-slide is-active" data-slide aria-hidden="false">
+              <figure class="proof-media">
+                <img src="assets/img/email-flagged.jpg" alt="Email sent to the driver after the operator flagged a trip, with the reason and violation count." decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">01 / Flagged</span>
+                <h3>The operator decides.</h3>
+                <p>The trip is reviewed, the driver is flagged with a reason, and SafeTransit sends the decision to the registered address. The message names the trip, the decision, the note and the violation count.</p>
+              </div>
+            </article>
+
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/email-report.jpg" alt="End-of-shift violation report email listing the driver, shift, five violations and each event time." decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">02 / Report</span>
+                <h3>One shift, one report.</h3>
+                <p>The driver gets the end-of-shift summary: total violations, a count per label, and the time of every event. The line next to each event says whether a clip was saved.</p>
+              </div>
+            </article>
+
+            <article class="proof-slide" data-slide aria-hidden="true">
+              <figure class="proof-media">
+                <img src="assets/img/email-sent.jpg" alt="Gmail Sent folder showing the SafeTransit flagged-driver message addressed to the driver." decoding="async">
+              </figure>
+              <div class="proof-copy">
+                <span class="section-num">03 / Sent</span>
+                <h3>It is in the Sent folder.</h3>
+                <p>The same message is in Sent, addressed to the driver, with the subject generated by the system. That is the difference between “the system can email” and “the email was sent.”</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="proof-nav">
+            <button class="proof-arrow" type="button" data-prev aria-label="Previous email proof">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            </button>
+            <div class="proof-dots" role="group" aria-label="Email proof slides">
+              <button class="proof-dot" type="button" data-dot="0" aria-current="true" aria-label="Show proof 1"></button>
+              <button class="proof-dot" type="button" data-dot="1" aria-current="false" aria-label="Show proof 2"></button>
+              <button class="proof-dot" type="button" data-dot="2" aria-current="false" aria-label="Show proof 3"></button>
+            </div>
+            <span class="proof-count" data-count aria-live="polite">01 / 03</span>
+            <button class="proof-arrow" type="button" data-next aria-label="Next email proof">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <p class="proof-note">Demo accounts: the addresses and driver record belong to the project team.</p>
+      </div>
+    </section>
+
+    <!-- CTA -------------------------------------------------->
+    <section class="section" id="evidence-cta">
+      <div class="wrap">
+        <div class="cta">
+          <p class="eyebrow">The evidence companion</p>
+          <h2>See what is built. <em>Read what is not.</em></h2>
+          <p>The documentation page walks through every ISO/IEC 25010:2023 quality characteristic, names the implemented functions, and states the limits of this prototype without assigning a rating.</p>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="documentation.html">
+              Read the evidence
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a class="btn" href="https://github.com/your-username/safetransit-showcase">View the source</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="SafeTransit home">
+            <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path d="M16 3.5 27 8v8.2c0 6.3-4.6 10.7-11 12-6.4-1.3-11-5.7-11-12V8Z" stroke="currentColor" stroke-width="1.4"/>
+              <path d="m10.8 16.2 3.2 3.2 7.2-7.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="brand-name">Safe<span>Transit</span></span>
+          </a>
+          <p>An AI + IoT capstone for public utility buses: driver drowsiness and behaviour monitoring, IR passenger counting, GPS, alerts and a local record of every trip.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Showcase</h4>
+          <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#demo">Demo videos</a></li>
+            <li><a href="#trip">Trip flow</a></li>
+            <li><a href="#people">People &amp; identity</a></li>
+            <li><a href="#violations">Violations</a></li>
+            <li><a href="#features">All features</a></li>
+            <li><a href="#modules">Module videos</a></li>
+            <li><a href="#email-proof">Email proof</a></li>
+            <li><a href="media.html">Media library</a></li>
+            <li><a href="#hardware">Hardware</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Evidence</h4>
+          <ul>
+            <li><a href="documentation.html#functional">Functional suitability</a></li>
+            <li><a href="documentation.html#security">Security</a></li>
+            <li><a href="documentation.html#limits">Limits</a></li>
+            <li><a href="documentation.html">Full documentation</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <ul>
+            <li><a href="https://github.com/your-username/safetransit-showcase">GitHub repository</a></li>
+            <li><a href="https://github.com/your-username/safetransit-showcase/issues">Issues</a></li>
+            <li><a href="mailto:hello@example.com">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>AI + IoT · ESP32 · MediaPipe + EfficientDet-Lite0 · Django · Flutter</span>
+        <span>© <span id="year">2026</span> SafeTransit · <a href="#top">Back to top ↑</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

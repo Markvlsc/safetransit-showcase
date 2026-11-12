@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentation — SafeTransit</title>
+  <meta name="description" content="ISO/IEC 25010:2023 evidence companion for SafeTransit: the implemented driver-monitoring, passenger-counting and reporting system, and its honest limits.">
+  <meta name="theme-color" content="#f5f1e6">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="SafeTransit — System documentation">
+  <meta property="og:description" content="The evidence companion: implemented, limited and bounded, stated plainly.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("safetransit-theme");
+        if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#docMain">Skip to documentation</a>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html" aria-label="SafeTransit home">
+        <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M16 3.5 27 8v8.2c0 6.3-4.6 10.7-11 12-6.4-1.3-11-5.7-11-12V8Z" stroke="currentColor" stroke-width="1.4"/>
+          <path d="m10.8 16.2 3.2 3.2 7.2-7.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">Safe<span>Transit</span></span>
+      </a>
+
+      <nav class="site-nav" id="siteNav" aria-label="Primary">
+        <a href="index.html#overview">Overview</a>
+        <a href="index.html#demo">Demo</a>
+        <a href="index.html#trip">Trip</a>
+        <a href="index.html#people">People</a>
+        <a href="index.html#hardware">Hardware</a>
+        <a href="index.html#dashboard">Dashboard</a>
+        <a href="index.html#mobile">Mobile</a>
+        <a href="index.html#modules">Modules</a>
+        <a href="media.html">Media</a>
+        <a class="mobile-only" href="documentation.html" aria-current="page">Evidence</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="btn btn-primary" href="index.html">Back to showcase</a>
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch color theme" aria-pressed="false">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+          </svg>
+        </button>
+        <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="docMain">
+    <!-- Document hero --------------------------------------->
+    <section class="doc-hero">
+      <div class="wrap doc-hero-inner">
+        <div>
+          <p class="eyebrow">System documentation · ISO/IEC 25010:2023</p>
+          <h1>The build, <em>on the record.</em></h1>
+          <p>
+            A claim-by-claim account of SafeTransit: what runs, what is bounded, and what has not
+            been tested. Each statement carries its evidence. Scores are deliberately absent — that
+            judgment belongs to the evaluator.
+          </p>
+          <div class="doc-meta">
+            <span><b>Instrument</b> ISO/IEC 25010:2023</span>
+            <span><b>System</b> SafeTransit web + mobile + ESP32</span>
+            <span><b>Coverage</b> 24 statements</span>
+            <span><b>Audience</b> technical review</span>
+          </div>
+        </div>
+        <div class="doc-actions">
+          <a class="btn btn-primary" href="index.html">
+            Back to showcase
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap doc-shell">
+      <!-- Sidebar ------------------------------------------->
+      <aside class="doc-side" aria-label="On this page">
+        <p class="side-label">Contents</p>
+        <ul class="toc" id="toc">
+          <li><a href="#scope">Scope and method</a></li>
+          <li><a href="#functional">Functional suitability</a></li>
+          <li><a href="#performance">Performance efficiency</a></li>
+          <li><a href="#reliability">Reliability</a></li>
+          <li><a href="#usability">Usability</a></li>
+          <li><a href="#security">Security</a></li>
+          <li><a href="#compatibility">Compatibility</a></li>
+          <li><a href="#maintainability">Maintainability</a></li>
+          <li><a href="#portability">Portability</a></li>
+          <li><a href="#limits">Overall and limits</a></li>
+          <li><a href="#method">Evidence method</a></li>
+        </ul>
+        <div class="side-note">
+          <b>How to read this page</b>
+          Each statement names a claim, a status and the evidence behind it. Status describes the
+          current build, not an ambition. Ratings are intentionally absent.
+        </div>
+      </aside>
+
+      <!-- Document body ------------------------------------->
+      <article class="doc">
+        <section class="doc-section" id="scope">
+          <h2>Scope and method</h2>
+          <p>
+            SafeTransit is three pieces: a Django web dashboard, a Flutter Android app, and an
+            ESP32 hardware kit. The host runs the dashboard and the two-model driver detector
+            (MediaPipe Face Landmarker + EfficientDet-Lite0); the two ESP32-CAMs, the IR sensor
+            node and the NEO-7M GPS post over the vehicle's Wi-Fi. The only outbound service is an
+            optional SMTP account for OTP and alert mail.
+          </p>
+
+          <div class="scope-grid">
+            <div class="scope-card">
+              <span class="k">Included</span>
+              <h3>What this page covers</h3>
+              <p>Driver and passenger video, drowsiness and behaviour analysis, driver profiles and scorecards, pre-shift identity, IR counting, GPS, alerts and clips, violation records, analytics, reports, accounts and backup.</p>
+            </div>
+            <div class="scope-card">
+              <span class="k">Excluded</span>
+              <h3>What is not claimed</h3>
+              <p>Certified safety equipment, fare collection, accident prediction, cloud multi-tenant hosting, TLS/at-rest encryption, and any feature that exists only in the proposal.</p>
+            </div>
+            <div class="scope-card">
+              <span class="k">Convention</span>
+              <h3>How a statement works</h3>
+              <p>A short claim, a status, then the evidence. Where a claim was not formally measured, that is stated instead of implied.</p>
+            </div>
+            <div class="scope-card">
+              <span class="k">Boundary</span>
+              <h3>One vehicle, one server</h3>
+              <p>A single local Django server, one vehicle's hardware and two roles: Operator (admin) and Conductor. Multi-company tenancy is out of scope.</p>
+            </div>
+          </div>
+
+          <p class="doc-subhead">Status key</p>
+          <div class="legend" aria-label="Status key">
+            <span class="pill pill-implemented">Implemented</span>
+            <span class="pill pill-limited">Limited</span>
+            <span class="pill pill-planned">Planned</span>
+            <span class="pill pill-out">Not in this version</span>
+          </div>
+
+          <div class="doc-tools">
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+              <label class="sr-only" for="statementSearch">Filter statements</label>
+              <input class="search" id="statementSearch" type="search" placeholder="Filter statements…" autocomplete="off">
+            </div>
+            <div class="filter-chips" role="group" aria-label="Filter by status">
+              <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+              <button class="chip" type="button" data-filter="implemented" aria-pressed="false">Implemented</button>
+              <button class="chip" type="button" data-filter="limited" aria-pressed="false">Limited</button>
+              <button class="chip" type="button" data-filter="planned" aria-pressed="false">Planned</button>
+            </div>
+            <span class="result-count" id="resultCount" aria-live="polite">24 statements</span>
+          </div>
+          <p class="empty" id="emptyState">No statements match that filter. Try a different term or status.</p>
+        </section>
+
+        <!-- Functional ------------------------------------->
+        <section class="quality" id="functional" data-quality>
+          <div class="quality-head">
+            <div class="quality-num" aria-hidden="true">01</div>
+            <div>
+              <h2>Functional suitability</h2>
+              <p class="quality-def">The degree to which the system provides functions that meet stated and implied needs, correctly and completely.</p>
+            </div>
+          </div>
+
+          <article class="statement" id="s1" data-status="implemented">
+            <div class="statement-num">01</div>
+            <div>
+              <div class="statement-head">
+                <h3>Scope coverage</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>The built system covers two live camera feeds, drowsiness and behaviour analysis, and a six-question pre-shift check with face/ID verification.</p>
+              <p>It also covers IR passenger counting, GPS and device health, buzzer/dashboard/email alerts, saved clips, analytics, reports and scorecards, violation records, driver profiles, accounts, OTP and backup.</p>
+              <p class="statement-limit"><strong>Not in scope:</strong> fare collection, accident prediction, cloud multi-tenant hosting and a certified safety rating.</p>
+              <div class="evidence"><b>Evidence</b>Django routes and templates expose each function; the demo clips show the camera, count, GPS and alert loop running on the bench build.</div>
+            </div>
+          </article>
+
+          <article class="statement" id="s2" data-status="limited">
+            <div class="statement-num">02</div>
+            <div>
+              <div class="statement-head">
+                <h3>Drowsiness is measured; behaviour cues are heuristics</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>MediaPipe Face Landmarker runs on the host CPU. Eye openness (EAR), mouth openness (MAR), PERCLOS, closed duration, yawns and head pose feed a per-driver calibrated profile; a threshold crossing raises a stage and a 0–100 score. For behaviour, MediaPipe Hand Landmarker supplies hand geometry and EfficientDet-Lite0 supplies object labels (phone, bottle, cup). Phone call, phone texting, smoking, drinking and distracted cues are geometry heuristics, not trained classifiers.</p>
+              <div class="evidence warn"><b>Limit</b>Drowsiness is the stronger signal. A hand near the mouth can be read as smoking while drinking or eating, and a head turn can be read as distracted. Three flags in a day block a new trip until midnight; the end-of-shift report rolls the events up per driver.</div>
+            </div>
+          </article>
+
+          <article class="statement" id="s3" data-status="implemented">
+            <div class="statement-num">03</div>
+            <div>
+              <div class="statement-head">
+                <h3>Passenger counting follows the door sequence</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>Two IR beams sit across the doorway. Entry or exit is inferred from which beam breaks first; a 25 ms debounce and a 900 ms single-beam cooldown reject chatter. A beam held LOW for 8 seconds is marked stuck; AUTO mode falls back to the healthy beam, and both stuck pauses counting instead of inventing a number.</p>
+              <div class="evidence"><b>Evidence</b>The sensor page exposes each beam's live level and stuck flag; the dashboard capacity meter reads the resulting count against 40 seats.</div>
+            </div>
+          </article>
+
+          <article class="statement" id="s4" data-status="limited">
+            <div class="statement-num">04</div>
+            <div>
+              <div class="statement-head">
+                <h3>Pre-shift identity is checked, with fallbacks</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>The pre-shift flow asks a six-question self-assessment and a five-question knowledge quiz, then a face scan and, where a code is present, an ID barcode read. Face identity uses YuNet detection and ArcFace embeddings; a liveness step rejects a static photo. A confident match against an enrolled profile switches the active driver automatically and logs a “Driver changed” event; an uncertain match leaves the current driver unchanged. There is no OCR fallback for an ID without a readable barcode.</p>
+              <div class="evidence warn"><b>Limit</b>Identity depends on lighting, camera angle and a clean barcode. A damaged or barcode-less ID cannot be read by this build.</div>
+            </div>
+          </article>
+
+          <article class="statement" id="s5" data-status="implemented">
+            <div class="statement-num">05</div>
+            <div>
+              <div class="statement-head">
+                <h3>GPS and device health are live</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>The NEO-7M posts latitude, longitude, speed, satellites, HDOP and altitude. The dashboard maps the fix with Leaflet, and the device page reports each camera, the IR node, the GPS and the buzzer. A stale or missing device is shown as offline rather than as a fresh value.</p>
+            </div>
+          </article>
+        </section>
+
+        <!-- Performance ------------------------------------>
+        <section class="quality" id="performance" data-quality>
+          <div class="quality-head">
+            <div class="quality-num" aria-hidden="true">02</div>
+            <div>
+              <h2>Performance efficiency</h2>
+              <p class="quality-def">The performance relative to the amount of resources used, under stated conditions.</p>
+            </div>
+          </div>
+
+          <article class="statement" id="s6" data-status="limited">
+            <div class="statement-num">06</div>
+            <div>
+              <div class="statement-head">
+                <h3>AI inference is CPU-only</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>All AI inference runs on the host CPU through MediaPipe, EfficientDet-Lite0 and OpenCV; there is no GPU or paid cloud call. Frame processing competes with the Django server and the database on the same machine. No formal FPS or CPU profile is claimed.</p>
+              <div class="evidence warn"><b>Limit</b>Frame rate depends on host CPU, camera resolution and Wi-Fi. This build does not publish a benchmark.</div>
+            </div>
+          </article>
+
+          <article class="statement" id="s7" data-status="limited">
+            <div class="statement-num">07</div>
+            <div>
+              <div class="statement-head">
+                <h3>The control path stays on the local network</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>Cameras and the sensor node post to the Django server over the vehicle Wi-Fi; the dashboard and phone poll the same endpoints. The control path does not depend on the internet. Video and sensor latency still depend on Wi-Fi congestion, camera firmware and host load.</p>
+              <div class="evidence"><b>Evidence</b>The dashboard shows camera age and sensor age, so a stale value is visible; no cloud round trip is part of the path.</div>
+            </div>
+          </article>
+
+          <article class="statement" id="s8" data-status="limited">
+            <div class="statement-num">08</div>
+            <div>
+              <div class="statement-head">
+                <h3>History is sized for one vehicle</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>MySQL stores passenger readings, camera status, GPS fixes, drowsiness state, behaviour events, alert clips, trips and accounts; PostgreSQL is supported through <code>DATABASE_URL</code>. The schema is migrated by Django. The design target is one vehicle, not a fleet-scale time-series load.</p>
+              <div class="evidence warn"><b>Limit</b>No large-volume load test is claimed. Retention and archival are manual.</div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Reliability ------------------------------------>
+        <section class="quality" id="reliability" data-quality>
+          <div class="quality-head">
+            <div class="quality-num" aria-hidden="true">03</div>
+            <div>
+              <h2>Reliability</h2>
+              <p class="quality-def">The degree to which the system performs specified functions under specified conditions for a specified period.</p>
+            </div>
+          </div>
+
+          <article class="statement" id="s9" data-status="implemented">
+            <div class="statement-num">09</div>
+            <div>
+              <div class="statement-head">
+                <h3>Device loss is visible and isolated</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>Each device has an independent status. If a camera stops streaming, the detector reports <code>NO_FACE</code> and the dashboard marks the camera offline; if the sensor node or GPS stops posting, its card goes stale. Reconnect controls sit on the camera page. The rest of the dashboard keeps running.</p>
+            </div>
+          </article>
+
+          <article class="statement" id="s10" data-status="implemented">
+            <div class="statement-num">10</div>
+            <div>
+              <div class="statement-head">
+                <h3>A stuck beam does not freeze the pair</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>An IR beam held LOW for 8 seconds is flagged stuck and excluded from pair counting; AUTO mode continues on the healthy beam. If both are stuck, counting pauses and the device page says so. A cleared beam re-arms after 500 ms.</p>
+              <div class="evidence"><b>Evidence</b>The behaviour is enforced in the sensor firmware and reported through the device API; the dashboard surfaces the stuck state.</div>
+            </div>
+          </article>
+
+          <article class="statement" id="s11" data-status="implemented">
+            <div class="statement-num">11</div>
+            <div>
+              <div class="statement-head">
+                <h3>Backup and restore are explicit operations</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>The backup API exports the database and dashboard records; the import path restores a previous file. The UI exposes backup and restore, and the project keeps database dumps under <code>backups/</code>. A restore is deliberate, not automatic.</p>
+              <div class="evidence"><b>Evidence</b>Backup/import endpoints and their tests exist. There is no off-site replication.</div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Usability -------------------------------------->
+        <section class="quality" id="usability" data-quality>
+          <div class="quality-head">
+            <div class="quality-num" aria-hidden="true">04</div>
+            <div>
+              <h2>Usability</h2>
+              <p class="quality-def">The degree to which the system can be used by specified users to achieve specified goals effectively, efficiently and satisfactorily.</p>
+            </div>
+          </div>
+
+          <article class="statement" id="s12" data-status="implemented">
+            <div class="statement-num">12</div>
+            <div>
+              <div class="statement-head">
+                <h3>The dashboard reads at a glance</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>The first screen puts the two feeds, capacity, route, GPS and device health in one view. The active driver and the alert count are visible without opening a menu. The same information is available in the mobile app.</p>
+            </div>
+          </article>
+
+          <article class="statement" id="s13" data-status="implemented">
+            <div class="statement-num">13</div>
+            <div>
+              <div class="statement-head">
+                <h3>The phone finds the server without a manual</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>The app probes mDNS for <code>safetransit.local</code>, scans the local subnet for port 8000, and remembers the last working address; a manual IP dialog is the fallback. Device setup walks through the hotspot, the Wi-Fi handoff and address discovery.</p>
+            </div>
+          </article>
+
+          <article class="statement" id="s14" data-status="implemented">
+            <div class="statement-num">14</div>
+            <div>
+              <div class="statement-head">
+                <h3>Status is written in user terms</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>Status appears as “No face detected”, “Sensor connected &amp; reporting”, “GPS connected &amp; reporting”, “No active alert” and “Online/Offline”. Technical detail stays in the serial log or the API instead of being the only explanation.</p>
+            </div>
+          </article>
+        </section>
+
+        <!-- Security --------------------------------------->
+        <section class="quality" id="security" data-quality>
+          <div class="quality-head">
+            <div class="quality-num" aria-hidden="true">05</div>
+            <div>
+              <h2>Security</h2>
+              <p class="quality-def">The degree to which the system protects information and data so that access is appropriate to the level of authorisation.</p>
+            </div>
+          </div>
+
+          <article class="statement" id="s15" data-status="implemented">
+            <div class="statement-num">15</div>
+            <div>
+              <div class="statement-head">
+                <h3>Accounts, OTP and roles</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>Django authentication protects the dashboard; new accounts pass an emailed OTP and operator approval. Roles are Operator and Conductor, with operator-only management pages. CSRF protection is enabled for form posts.</p>
+              <div class="evidence"><b>Evidence</b>Session login, the OTP model, role checks and protected user-management routes are present in the Django app.</div>
+            </div>
+          </article>
+
+          <article class="statement" id="s16" data-status="implemented">
+            <div class="statement-num">16</div>
+            <div>
+              <div class="statement-head">
+                <h3>Media and camera feeds need a session</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>Uploaded face photos and alert clips are served by an authenticated view rather than Django's public static handler. Camera feeds are proxied through the server, so a viewer needs a session. Hardware posts can carry an optional device key.</p>
+            </div>
+          </article>
+
+          <article class="statement" id="s17" data-status="limited">
+            <div class="statement-num">17</div>
+            <div>
+              <div class="statement-head">
+                <h3>Transport and storage are LAN-grade</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>The dashboard and API run over plain HTTP on the local network; TLS is not terminated by the app. MySQL data is not encrypted at rest by the application, and the optional device key can be left empty. This suits a trusted bus/LAN deployment, not a hostile network.</p>
+              <div class="evidence warn"><b>Limit</b>No TLS, no at-rest encryption and no per-field access control. The deployment boundary is the vehicle's trusted network.</div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Compatibility -------------------------------->
+        <section class="quality" id="compatibility" data-quality>
+          <div class="quality-head">
+            <div class="quality-num" aria-hidden="true">06</div>
+            <div>
+              <h2>Compatibility</h2>
+              <p class="quality-def">The degree to which the system can exchange information with other systems and perform its functions while sharing an environment.</p>
+            </div>
+          </div>
+
+          <article class="statement" id="s18" data-status="limited">
+            <div class="statement-num">18</div>
+            <div>
+              <div class="statement-head">
+                <h3>Client coverage is Chromium-led</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>The dashboard relies on current browser features — Tailwind, Leaflet, <code>fetch</code> and the camera proxy — and has been exercised in Chromium-based browsers. No formal Firefox, Safari or small-screen matrix is claimed.</p>
+            </div>
+          </article>
+
+          <article class="statement" id="s19" data-status="limited">
+            <div class="statement-num">19</div>
+            <div>
+              <div class="statement-head">
+                <h3>The companion app is Android-only</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>The mobile app is a Flutter Android build distributed as an APK, targeting Android 10 or newer. There is no iOS build, and the app expects the server on the same LAN.</p>
+            </div>
+          </article>
+
+          <article class="statement" id="s20" data-status="implemented">
+            <div class="statement-num">20</div>
+            <div>
+              <div class="statement-head">
+                <h3>Database and deployment options</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>MySQL 8 is the default; PostgreSQL works through <code>DATABASE_URL</code>. Docker Compose and a Render-style deployment are included. The schema is single-tenant, so there is no per-company isolation.</p>
+            </div>
+          </article>
+        </section>
+
+        <!-- Maintainability ------------------------------->
+        <section class="quality" id="maintainability" data-quality>
+          <div class="quality-head">
+            <div class="quality-num" aria-hidden="true">07</div>
+            <div>
+              <h2>Maintainability</h2>
+              <p class="quality-def">The degree to which the system can be modified effectively and efficiently, including correction and improvement.</p>
+            </div>
+          </div>
+
+          <article class="statement" id="s21" data-status="implemented">
+            <div class="statement-num">21</div>
+            <div>
+              <div class="statement-head">
+                <h3>Responsibilities are separated</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>The Django project separates models, views, API routes, camera and clip handling, backups and templates. The detector, behaviour rules and driver profile are separate Python modules. The Flutter app and the ESP32 firmware live in their own trees.</p>
+            </div>
+          </article>
+
+          <article class="statement" id="s22" data-status="limited">
+            <div class="statement-num">22</div>
+            <div>
+              <div class="statement-head">
+                <h3>Tests cover the logic, not the whole rig</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>Unit tests cover the behaviour engine, drowsiness state and alert-clip import; Django tests cover camera setup, driver profiles, GPS status and mobile login. There is no CI pipeline, coverage target or full end-to-end hardware test in the repository.</p>
+            </div>
+          </article>
+        </section>
+
+        <!-- Portability ---------------------------------->
+        <section class="quality" id="portability" data-quality>
+          <div class="quality-head">
+            <div class="quality-num" aria-hidden="true">08</div>
+            <div>
+              <h2>Portability</h2>
+              <p class="quality-def">The degree to which the system can be transferred from one environment to another effectively and efficiently.</p>
+            </div>
+          </div>
+
+          <article class="statement" id="s23" data-status="implemented">
+            <div class="statement-num">23</div>
+            <div>
+              <div class="statement-head">
+                <h3>The server can move hosts</h3>
+                <span class="pill pill-implemented">Implemented</span>
+              </div>
+              <p>The server is a Python/Django app with <code>requirements.txt</code>, <code>.env</code> configuration, Docker Compose and a Render blueprint. Moving it means installing Python 3.12+, pointing it at MySQL or PostgreSQL, and running migrations; the LAN address changes, so the phone must rediscover it.</p>
+            </div>
+          </article>
+
+          <article class="statement" id="s24" data-status="limited">
+            <div class="statement-num">24</div>
+            <div>
+              <div class="statement-head">
+                <h3>Hardware moves, but not invisibly</h3>
+                <span class="pill pill-limited">Limited</span>
+              </div>
+              <p>Cameras, beams, GPS and buzzer are off-the-shelf and can be moved between vehicles. Camera IPs and the sensor mapping are configuration, but mounting, beam alignment and Wi-Fi setup are manual; there is no auto-provisioning.</p>
+            </div>
+          </article>
+        </section>
+
+        <!-- Limits --------------------------------------->
+        <section class="doc-section" id="limits">
+          <h2>Overall and limits</h2>
+          <p>These are the facts an evaluator should weigh when assigning a rating. They are not a recommendation.</p>
+
+          <div class="callout" style="margin-top:22px">
+            <b>Overall picture</b>
+            <p>SafeTransit is a <strong>working capstone prototype</strong>, not a certified safety product. Its strongest evidence is the local loop: camera/beam input becomes an alert, and the alert becomes a saved record on the same dashboard the phone reads. Its weakest areas are camera-dependent detection, heuristic behaviour labels, LAN-only security, an Android-only client and the absence of formal accuracy, load and cross-browser testing.</p>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <p class="doc-subhead">Strong evidence</p>
+              <ul class="list-check">
+                <li>Live driver and passenger feeds with the AI overlay on the operator dashboard.</li>
+                <li>IR door counting with ordered entry/exit and a stuck-beam fallback.</li>
+                <li>GPS, vehicle speed and device health on the same screen.</li>
+                <li>Buzzer, dashboard alert, saved clip and optional email in one event path.</li>
+                <li>Analytics, reports, violation records and driver scorecards after the shift.</li>
+              </ul>
+            </div>
+            <div>
+              <p class="doc-subhead">Known limitations</p>
+              <ul class="list-check limits">
+                <li><strong>Camera-dependent.</strong> Lighting, resolution, glare and Wi-Fi affect what the AI can see.</li>
+                <li><strong>Heuristic behaviour cues.</strong> Phone, smoking and distracted labels can false-positive.</li>
+                <li><strong>Barcode-only ID.</strong> An ID without a readable code cannot be read.</li>
+                <li><strong>LAN-grade security.</strong> No TLS, no at-rest encryption, optional device key.</li>
+                <li><strong>Android only.</strong> No iOS build for the companion app.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Method --------------------------------------->
+        <section class="doc-section" id="method">
+          <h2>Evidence method</h2>
+          <p>Evidence was gathered by inspecting the Django routes, views, models and templates; running the dashboard and the detector against the bench hardware; reviewing the recorded demo clips; and reading the project's unit and API tests. The TAM/UAT instrument is a separate study and is not scored on this page.</p>
+          <p>No formal accuracy, latency, soak, load or cross-browser benchmark is claimed. Where a statement depends on formal measurement, it is marked <strong>Limited</strong> and the missing test is named. No rating is assigned here; the evaluation form is the place for one.</p>
+
+          <div class="callout" style="margin-top:22px">
+            <b>Media note</b>
+            <p>The screenshots and clips come from the project's <code>CPS</code> folder. Demo faces belong to the project team. Source screenshots that showed a full driver roster were not used; where a name appears in a clip, it is part of the bench demo.</p>
+          </div>
+
+          <div class="doc-footer">
+            <span class="muted" style="font-size:12px">ISO/IEC 25010:2023 evidence companion · 24 statements</span>
+            <a class="link-arrow" href="#docMain">Back to the top
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+            </a>
+          </div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="SafeTransit home">
+            <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path d="M16 3.5 27 8v8.2c0 6.3-4.6 10.7-11 12-6.4-1.3-11-5.7-11-12V8Z" stroke="currentColor" stroke-width="1.4"/>
+              <path d="m10.8 16.2 3.2 3.2 7.2-7.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="brand-name">Safe<span>Transit</span></span>
+          </a>
+          <p>Technical notes for the SafeTransit capstone: implementation, boundaries and test coverage. Read them beside the running system, not instead of it.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Showcase</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#demo">Demo videos</a></li>
+            <li><a href="index.html#people">People &amp; identity</a></li>
+            <li><a href="media.html">Media library</a></li>
+            <li><a href="index.html#mobile">Mobile app</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Sections</h4>
+          <ul>
+            <li><a href="#functional">Functional suitability</a></li>
+            <li><a href="#security">Security</a></li>
+            <li><a href="#portability">Portability</a></li>
+            <li><a href="#limits">Limits</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <ul>
+            <li><a href="https://github.com/your-username/safetransit-showcase">GitHub repository</a></li>
+            <li><a href="https://github.com/your-username/safetransit-showcase/issues">Issues</a></li>
+            <li><a href="mailto:hello@example.com">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>AI + IoT · ESP32 · MediaPipe + EfficientDet-Lite0 · Django · Flutter</span>
+        <span>© <span id="year">2026</span> SafeTransit · <a href="index.html">Back to showcase</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/app.js" defer></script>
+</body>
+</html>
